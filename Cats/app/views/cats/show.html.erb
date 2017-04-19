@@ -19,9 +19,32 @@
     <td>Description</td>
     <td> <%= @cat.description %> </td>
   </tr>
+</table>
+<br>
 
+<table>
+  <h3> Current Rentals </ h3>
+  <% @rental.each do |rent| %>
   <tr>
+    <td>Start Date: <%= rent.start_date %></td>
+    <td>End Date: <%= rent.end_date %> </td>
+    <% if rent.status == "pending" %>
+    <td>
+      <form action= <%=  "/cat_rental_requests/#{rent.id}/approve" %> method="POST">
+        <input type="hidden" name="_method" value="PATCH">
+        <input type="submit" value="Approve">
+      </form>
+    </td>
+
+    <td>
+      <form action= <%=  "/cat_rental_requests/#{rent.id}/deny" %> method="POST">
+        <input type="hidden" name="_method" value="PATCH">
+        <input type="submit" value="Deny">
+      </form>
+    </td>
+    <% end %>
+
 
   </tr>
-
+  <% end %>
 </table>

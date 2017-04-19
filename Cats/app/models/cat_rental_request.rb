@@ -25,6 +25,10 @@ class CatRentalRequest < ActiveRecord::Base
     start_date, end_date, start_date, end_date)
   end
 
+  def overlapping_pending_requests
+    overlapping_requests.where(status: "pending")
+  end
+
   def overlapping_approved_requests
     overlapping_requests.where(status: "approved")
   end
@@ -33,5 +37,20 @@ class CatRentalRequest < ActiveRecord::Base
     if overlapping_approved_requests.exists?
       errors[:message] << "Can't request for those dates, cat is rented out"
     end
+  end
+
+  def approve!
+    CatRentalRequest.transaction do
+      update_attribute("status", "approved")
+      overlapping_pending_requests.each { |rental| rental.update_attribute("status", "denied")}
+    end
+  end
+
+  def deny!
+    update_attribute("status", "denied")
+  end
+
+  def pending?
+    status == "pending"
   end
 end
